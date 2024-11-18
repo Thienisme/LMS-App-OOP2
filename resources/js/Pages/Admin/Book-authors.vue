@@ -41,25 +41,37 @@ const setAuthor = (author, id) => {
 
 const addAuthor = () => {
   form.is_active = 1;
-  form.post('/admin/add-author');
-  form.reset();
-  window.location.reload()
+  form.post('/admin/add-author', {
+    preserveScroll: true,
+    onSuccess: () => {
+      form.reset();
+      window.location.reload();
+    }
+  });
 };
 
 const deleteAuthor = (id) => {
   if (window.confirm("Are you sure you want to delete this item?")) {
-    form.post(`/admin/delete-author/${id}`);
-    form.reset();
-    window.location.reload()
+    form.post(`/admin/delete-author/${id}`, {
+    preserveScroll: true,
+    onSuccess: () => {
+      form.reset();
+      window.location.reload();
+    }
+  });
   }
 };
 
 const updateAuthor = (id) => {
   formModal.isOpen = null;
   editForm.is_active = selectedStatus.value;
-  editForm.patch(`/admin/update-author/${id}`);
-  editForm.reset();
-  window.location.reload()
+  editForm.patch(`/admin/update-author/${id}`, {
+    preserveScroll: true,
+    onSuccess: () => {
+      form.reset();
+      window.location.reload();
+    }
+  });
 };
 </script>
 

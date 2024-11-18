@@ -90,9 +90,13 @@ const addBook = () => {
 
 const deleteBook = (id) => {
   if (window.confirm("Are you sure you want to delete this item?")) {
-    form.post(`/admin/delete-book/${id}`);
-    form.reset();
-    window.location.reload()
+    form.post(`/admin/delete-book/${id}`, {
+    preserveScroll: true,
+    onSuccess: () => {
+      form.reset();
+      window.location.reload();
+    }
+  });
   }
 };
 
@@ -101,9 +105,13 @@ const updateBook = (id) => {
   editForm.is_active = selectedStatus.value;
   editForm.category_id = optionCategories.value;
   editForm.author_id = optionAuthors.value;
-  editForm.post(`/admin/update-book/${id}`);
-  editForm.reset();
-  window.location.reload();
+  editForm.post(`/admin/update-book/${id}`, {
+    preserveScroll: true,
+    onSuccess: () => {
+      form.reset();
+      window.location.reload();
+    }
+  });
 };
 </script>
 

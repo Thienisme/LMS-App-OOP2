@@ -18,7 +18,8 @@ const user = usePage().props.auth.user;
 
 const form = useForm({
     name: user.name,
-    email: user.email,
+    email: user.email,  
+    profile_img: null,
 });
 </script>
 
@@ -28,14 +29,20 @@ const form = useForm({
             <h2 class="text-lg font-medium text-gray-900">Profile Information</h2>
 
             <p class="mt-1 text-sm text-gray-600">
-                Update your account's profile information and email address.
+                Update your account's profile information, email address.
             </p>
         </header>
+
+        <!-- Hiển thị ảnh đại diện hiện tại nếu có -->
+        <div v-if="user.profile_img" class="mb-4 mt-4"> 
+            <img :src="`/profile/${user.profile_img}`" alt="Avatar" class="w-20 h-20 rounded-full object-cover" />
+        </div>
+
+        <InputError class="mt-2" :message="form.errors.profile_img" />
 
         <form @submit.prevent="form.patch(route('profile.update'))" class="mt-6 space-y-6">
             <div>
                 <InputLabel for="name" value="Name" />
-
                 <TextInput
                     id="name"
                     type="text"
@@ -45,13 +52,11 @@ const form = useForm({
                     autofocus
                     autocomplete="name"
                 />
-
                 <InputError class="mt-2" :message="form.errors.name" />
             </div>
 
             <div>
                 <InputLabel for="email" value="Email" />
-
                 <TextInput
                     id="email"
                     type="email"
@@ -60,7 +65,6 @@ const form = useForm({
                     required
                     autocomplete="username"
                 />
-
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
@@ -95,3 +99,4 @@ const form = useForm({
         </form>
     </section>
 </template>
+

@@ -39,24 +39,36 @@ const setCategory = (category, id) => {
 };
 
 const addCategory = () => {
-  form.post('/admin/add-category');
-  form.reset();
-  window.location.reload()
+  form.post('/admin/add-category', {
+    preserveScroll: true,
+    onSuccess: () => {
+      form.reset();
+      window.location.reload();
+    }
+  });
 };
 
 const deleteCategory = (id) => {
   if (window.confirm("Are you sure you want to delete this item?")) {
-    form.post(`/admin/delete-category/${id}`);
-    form.reset();
-    window.location.reload()
+    form.post(`/admin/delete-category/${id}`, {
+      preserveScroll: true,
+      onSuccess: () => {
+        form.reset();
+        window.location.reload();
+      }
+    });
   }
 };
 
 const updateCategory = (id) => {
   formModal.isOpen = null;
-  editForm.patch(`/admin/update-category/${id}`);
-  editForm.reset();
-  window.location.reload()
+  editForm.patch(`/admin/update-category/${id}`, {
+    preserveScroll: true,
+    onSuccess: () => {
+      form.reset();
+      window.location.reload();
+    }
+  });
 };
 </script>
 

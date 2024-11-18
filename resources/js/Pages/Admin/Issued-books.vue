@@ -38,17 +38,23 @@ const getID = (id) => {
 const updateStatus = () => {
   form.is_return = selectedStatus.value;
   formModal.isOpen = null;
-  form.put(route('issued-books.update'));
-  form.reset();
-  window.location.reload();
+  form.put(route('issued-books.update'), {
+        onSuccess: () => {
+            form.reset();
+            window.location.reload(); // Làm mới trang sau khi cập nhật thành công
+        }
+    });
 }
 
 const deleteBookRequest = (id) => {
   form.id = id;
   if (window.confirm("Are you sure you want to delete this item?")) {
-    form.delete(route('issued-books.destroy'));
-    form.reset();
-    window.location.reload();
+    form.delete(route('issued-books.destroy'), {
+        onSuccess: () => {
+            form.reset();
+            window.location.reload(); // Làm mới trang sau khi cập nhật thành công
+        }
+    });
   }
 }
 

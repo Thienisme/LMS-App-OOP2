@@ -38,9 +38,12 @@ const getID = (id) => {
 const updateStatus = () => {
   form.action = selectedStatus.value;
   formModal.isOpen = null;
-  form.put(route('transactions.update'));
-  form.reset();
-  window.location.reload();
+  form.put(route('transactions.update'), {
+        onSuccess: () => {
+            form.reset();
+            window.location.reload(); // Làm mới trang sau khi cập nhật thành công
+        }
+    });
 }
 
 </script>

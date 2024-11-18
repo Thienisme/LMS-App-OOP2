@@ -18,7 +18,7 @@ DataTable.use(DataTablesCore);
 
 // Retrieve Data from Backend props
 defineProps({
-  users: Object
+  users: Object 
 });
 
 
@@ -37,19 +37,29 @@ const setUser = (user, id) => {
 
 const updateUser = (id) => {
   formModal.isOpen = null;
-  editForm.is_admin = optionRole.value;
-  editForm.patch(`/admin/update-user/${id}`);
-  editForm.reset();
-  window.location.reload();
+  editForm.is_admin = optionRole.value; // Giả định optionRole là giá trị bạn muốn gán
+
+  editForm.patch(`/admin/update-user/${id}`, {
+    preserveScroll: true,
+    onSuccess: () => {
+      editForm.reset(); // Đảm bảo reset đúng form
+      window.location.reload(); // Làm mới trang sau khi cập nhật thành công
+    }
+  });
 };
 
 const deleteUser = (id) => {
   if (window.confirm("Are you sure you want to delete this item?")) {
-    editForm.post(`/admin/delete-user/${id}`);
-    editForm.reset();
-    window.location.reload();
+    editForm.post(`/admin/delete-user/${id}`, {
+      preserveScroll: true,
+      onSuccess: () => {
+        editForm.reset(); // Đảm bảo reset đúng form
+        window.location.reload(); // Làm mới trang sau khi xóa thành công
+      }
+    });
   }
 };
+
 </script>
 
 <template>

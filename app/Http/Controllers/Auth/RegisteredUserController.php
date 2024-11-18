@@ -31,36 +31,44 @@ class RegisteredUserController extends Controller
      * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse
-    {
+        {
+            // Bước 1: Xác thực dữ liệu đầu vào
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:'.User::class,
+                'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                'profile' => [
+                    'nullable', 
+                    File::types(['png', 'jpg', 'jpeg', 'gif'])->max(2048),
+                ],
+            ]);
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:'.User::class,
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            // 'profile_img' => [
-            //     'required',
-            //     File::types(['png', 'jpg'])
-            // ],
-        ]);
+            // Bước 2: Xử lý file ảnh đại diện (nếu có)
+            $profilePath = null;
+            if ($request->hasFile('profile')) {
+                // Lưu file vào thư mục 'public/profile' và lấy tên gốc
+                $fileName = $request->file('profile')->getClientOriginalName();
+                $request->file('profile')->move(public_path('profile'), $fileName);
 
-        $user = User::create([
-            // $userData->name = $request->name,
-            // $userData->email = $request->email,
-            // $userData->passsword = Hash::make($request->password),
-            // $userData->profile_img = $request->input(null),
-            // $userData->is_admin = $request->input(0),
-            // $userData->save(),
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'profile_img' => $request->profile,
-            'is_admin' =>  $request->role,
-        ]);
+                // Chỉ lưu tên ảnh vào cơ sở dữ liệu (không lưu đường dẫn)
+                $profilePath = $fileName;
+            }
 
-        event(new Registered($user));
+            // Bước 3: Tạo người dùng mới
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'profile_img' => $profilePath, // Lưu chỉ tên ảnh
+                'is_admin' => $request->role,
+            ]);
 
-        Auth::login($user);
+            // Bước 4: Sự kiện đăng ký và đăng nhập người dùng
+            event(new Registered($user));
+            Auth::login($user);
 
-        return redirect(RouteServiceProvider::HOME);
-    }
+            // Bước 5: Điều hướng đến trang chủ
+            return redirect(RouteServiceProvider::HOME);
+        }
+
 }

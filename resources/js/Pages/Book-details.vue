@@ -12,6 +12,13 @@ defineProps({
     is_requested: Object,
 });
 
+onMounted(() => {
+    document.addEventListener('contextmenu', (event) => {
+        event.preventDefault();
+    });
+});
+
+
 const $toast = useToast();
 const path = ref("/uploads/");
 
@@ -103,22 +110,20 @@ const addBookRequest = (userID, bookID) => {
                     <img class="rounded-lg shadow w-full" :src="path + book.book_img" />
                 </div>
                 <div class="flex flex-col justify-center">
-                    <span class="text-blue-500 font-normal">{{
-                        book.category_name
-                    }}</span>
-                    <h2 class="text-3xl font-semibold text-gray-800 dark:text-white">
+                    <span class="text-blue-500 font-normal no-select">{{ book.category_name }}</span>
+                    <h2 class="text-3xl font-semibold text-gray-800 dark:text-white no-select">
                         {{ book.book_name }}
                     </h2>
-                    <p class="text-gray-500 mb-2">{{ book.author_name }}</p>
-                    <p class="text-gray-700 mb-4">
+                    <p class="text-gray-500 mb-2 no-select">{{ book.author_name }}</p>
+                    <p class="text-gray-700 mb-4 no-select">
                         {{ book.description }}
                     </p>
                     <div class="flex justify-center flex-col mb-4">
-                        <p class="text-xl font-bold mr-2">
+                        <p class="text-xl font-bold mr-2 no-select">
                             Fee:
                             <span class="font-normal text-lg">₱{{ book.book_fees }}.00</span>
                         </p>
-                        <p class="text-xl font-bold mr-2">
+                        <p class="text-xl font-bold mr-2 no-select">
                             Qty:
                             <span class="font-normal text-lg">{{ book.quantity }} Copies</span>
                         </p>
@@ -171,4 +176,19 @@ const addBookRequest = (userID, bookID) => {
     </AuthenticatedLayout>
 </template>
 
-<style scoped></style>
+<style scoped>
+    /* Ngăn không cho sao chép và chọn văn bản */
+    .no-select {
+        user-select: none;  /* Vô hiệu hóa chọn văn bản */
+        -webkit-user-select: none;  /* Dành cho trình duyệt Webkit (Chrome, Safari) */
+        -moz-user-select: none;  /* Dành cho Firefox */
+        -ms-user-select: none;  /* Dành cho IE */
+    }
+
+    /* Vô hiệu hóa chuột phải */
+    .no-right-click {
+        -webkit-user-drag: none;
+        user-drag: none;
+    }
+</style>
+

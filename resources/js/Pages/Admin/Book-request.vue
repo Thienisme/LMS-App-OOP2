@@ -35,21 +35,28 @@ const getID =(id)=> {
     form.id = id;
 }
 
-const updateStatus =()=> {
+const updateStatus = () => {
     form.status = selectedStatus.value;
     formModal.isOpen = null;
-    form.put(route('admin-book-request.update'));
-    form.reset();
-    window.location.reload();
+
+    form.put(route('admin-book-request.update'), {
+        onSuccess: () => {
+            form.reset();
+            window.location.reload(); // Làm mới trang sau khi cập nhật thành công
+        }
+    });
 }
 
-const deleteBookRequest =(id)=> {
+const deleteBookRequest = (id) => {
     form.id = id;
     if (window.confirm("Are you sure you want to delete this item?")) {
-        form.delete(route('admin-book-request.destroy'));
-        form.reset();
-        window.location.reload();
-  }
+        form.delete(route('admin-book-request.destroy'), {
+            onSuccess: () => {
+                form.reset();
+                window.location.reload(); // Làm mới trang sau khi xóa thành công
+            }
+        });
+    }
 }
 
 </script>

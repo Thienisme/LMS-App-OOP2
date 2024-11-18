@@ -12,7 +12,7 @@ const form = useForm({
     password: '',
     password_confirmation: '',
     role: 0,
-    profile: 'default-profile.png',
+    profile: null,  // Đặt là null ban đầu
     terms: false,
 });
 
@@ -20,6 +20,14 @@ const submit = () => {
     form.post(route('register'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
+};
+
+const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    console.log(file)
+    if (file) {
+        form.profile = file; // Gán file đã chọn vào form
+    }
 };
 </script>
 
@@ -30,7 +38,6 @@ const submit = () => {
         <form @submit.prevent="submit">
             <div>
                 <InputLabel for="name" value="Full Name" />
-
                 <TextInput
                     id="name"
                     type="text"
@@ -40,13 +47,11 @@ const submit = () => {
                     autofocus
                     autocomplete="name"
                 />
-
                 <InputError class="mt-2" :message="form.errors.name" />
             </div>
 
             <div class="mt-4">
                 <InputLabel for="email" value="Email" />
-
                 <TextInput
                     id="email"
                     type="email"
@@ -55,13 +60,11 @@ const submit = () => {
                     required
                     autocomplete="username"
                 />
-
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
             <div class="mt-4">
                 <InputLabel for="password" value="Password" />
-
                 <TextInput
                     id="password"
                     type="password"
@@ -70,13 +73,11 @@ const submit = () => {
                     required
                     autocomplete="new-password"
                 />
-
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
             <div class="mt-4">
                 <InputLabel for="password_confirmation" value="Confirm Password" />
-
                 <TextInput
                     id="password_confirmation"
                     type="password"
@@ -85,29 +86,33 @@ const submit = () => {
                     required
                     autocomplete="new-password"
                 />
-
                 <InputError class="mt-2" :message="form.errors.password_confirmation" />
             </div>
 
+            <div class="mt-4">
+                <InputLabel for="profile" value="Profile Image" />
+                <input
+                    id="profile"
+                    type="file"
+                    class="mt-1 block w-full"
+                    @change="handleFileChange"
+                />
+                <InputError class="mt-2" :message="form.errors.profile" />
+            </div>
+
             <div class="flex flex-col gap-5 mt-4">
-                <!-- <Link
-                    :href="route('login')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    Already registered?
-                </Link> -->
                 <div>
                     <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                         Register
                     </PrimaryButton>
                 </div>
             </div>
+
             <div>
                 <hr class="mt-5">
-                <p class="mt-5 mb-2 text-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">Already have an account? <Link class="text-blue-500 hover:text-blue-600"
-                    :href="route('login')"
-                    >Login</Link
-                ></p>
+                <p class="mt-5 mb-2 text-center text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
+                    Already have an account? <Link class="text-blue-500 hover:text-blue-600" :href="route('login')">Login</Link>
+                </p>
             </div>
         </form>
     </GuestLayout>
