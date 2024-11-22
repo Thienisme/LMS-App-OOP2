@@ -4,7 +4,6 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
-import { ref } from 'vue';
 
 defineProps({
     mustVerifyEmail: {
@@ -16,79 +15,36 @@ defineProps({
 });
 
 const user = usePage().props.auth.user;
-const previewImage = ref(user.profile_img ? `/profile/${user.profile_img}` : '/uploads/profile/default-profile.png');
 
 const form = useForm({
     name: user.name,
-    email: user.email,
+    email: user.email,  
     profile_img: null,
 });
-
-const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        // Preview image
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            previewImage.value = e.target.result;
-        };
-        reader.readAsDataURL(file);
-
-        // Set file to form
-        form.profile_img = file;
-    }
-};
-
-const submit = () => {
-    form.patch(route('profile.update'), {
-        preserveScroll: true,
-        preserveState: true,
-        onSuccess: () => {
-            // Reset file input
-            document.getElementById('profile_img').value = '';
-        },
-    });
-};
 </script>
 
 <template>
     <section>
         <header>
             <h2 class="text-lg font-medium text-gray-900">Profile Information</h2>
+
             <p class="mt-1 text-sm text-gray-600">
-                Update your account's profile information, email address and avatar.
+                Update your account's profile information, email address.
             </p>
         </header>
 
-        <form @submit.prevent="submit" class="mt-6 space-y-6" enctype="multipart/form-data">
-            <!-- Avatar Section -->
-            <div class="mb-4">
-                <InputLabel for="profile_img" value="Avatar" />
-                <div class="mt-2 flex items-center gap-x-3">
-                    <img
-                        :src="previewImage"
-                        alt="Avatar"
-                        class="h-20 w-20 rounded-full object-cover"
-                    />
-                    <div class="flex flex-col">
-                        <input
-                            type="file"
-                            id="profile_img"
-                            @change="handleImageUpload"
-                            accept="image/*"
-                            class="block w-full text-sm text-gray-500
-                                file:mr-4 file:py-2 file:px-4
-                                file:rounded-md file:border-0
-                                file:text-sm file:font-semibold
-                                file:bg-indigo-600 file:text-white
-                                hover:file:bg-indigo-700
-                                file:cursor-pointer"
-                        />
-                        <InputError class="mt-2" :message="form.errors.profile_img" />
-                    </div>
-                </div>
-            </div>
 
+        <form @submit.prevent="form.patch(route('profile.update'))" class="mt-6 space-y-6">
+            <!-- Hiển thị ảnh đại diện hiện tại nếu có, nếu không sẽ hiển thị ảnh mặc định -->
+            <div class="mb-4 mt-4">
+            <InputLabel for="avatar" value="Avatar" />
+                <img
+                    :src="user.profile_img ? `/profile/${user.profile_img}` : '/uploads/profile/default-profile.png'"
+                    alt="Avatar"
+                    class="w-20 h-20 rounded-full object-cover"
+                />
+                <InputError class="mt-2" :message="form.errors.profile_img" />
+            </div>
             <div>
                 <InputLabel for="name" value="Name" />
                 <TextInput
@@ -147,3 +103,4 @@ const submit = () => {
         </form>
     </section>
 </template>
+
