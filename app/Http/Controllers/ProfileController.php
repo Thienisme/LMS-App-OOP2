@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -29,8 +30,32 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        // Get validated data
+        $validated = $request->validated();
+        
+        // Handle profile image upload
+        if ($request->hasFile('profile_img')) {
+            // Delete old profile image if exists
+            if ($request->user()->profile_img) {
+                $oldPath = public_path('profile/') . $request->user()->profile_img;
+                if (file_exists($oldPath)) {
+                    unlink($oldPath);
+                }
+            }
+            
+            // Store new profile image
+            $file = $request->file('profile_img');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('profile'), $filename);
+            
+            // Update profile_img in validated data
+            $validated['profile_img'] = $filename;
+        }
 
+        // Fill user data
+        $request->user()->fill($validated);
+
+        // Check if email was changed
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
         }
@@ -50,6 +75,14 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
+
+        // Delete profile image if exists
+        if ($user->profile_img) {
+            $imagePath = public_path('profile/') . $user->profile_img;
+            if (file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+        }
 
         Auth::logout();
 

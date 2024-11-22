@@ -15,19 +15,25 @@ const form = useForm({
 
 <template>
     <div class="h-[70px] bg-gray-800">
-        <!-- Logo -->
-        <div class="px-[20px] pt-3">
-            <img width="120" src="../../../images/lms_logo-2.png">
-        </div>
+    <!-- Logo -->
+    <div class="px-[20px] pt-3">
+        <img width="120" src="../../../images/lms_logo-2.png">
     </div>
+    </div>
+
     <div class="h-100 bg-gray-800 px-[20px] flex items-center gap-3 py-3">
-        <img class="rounded-full" :src="path + form.profile" style="width: 64px; height: 64px;">
+        <!-- Avatar người dùng -->
+        <img
+            class="rounded-full"
+            :src="form.profile ? path + form.profile : '/uploads/profile/default-profile.png'" 
+            style="width: 64px; height: 64px;">
         <div>
             <h3 class="text-gray-100">{{ form.name }}</h3>
             <p class="text-gray-500" v-if="form.role == 1">Admin</p>
             <p class="text-gray-500" v-if="form.role == 0">User</p>
         </div>
     </div>
+
     <div class="h-full bg-gray-800">
         <!-- Nav-Items -->
         <nav>

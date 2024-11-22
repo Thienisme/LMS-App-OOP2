@@ -50,16 +50,23 @@ const showingNavigationDropdown = ref(false);
                             <div class="ml-3 relative">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
-                                        <span class="inline-flex rounded-md">
-                                            <!-- Hiển thị ảnh người dùng thay vì tên -->
+                                        <span class="inline-flex rounded-md" style="display: ruby;">
+                                            <!-- Hiển thị ảnh người dùng nếu có, nếu không sẽ hiển thị ảnh mặc định -->
                                             <img 
                                                 v-if="$page.props.auth.user.profile_img" 
                                                 :src="`/profile/${$page.props.auth.user.profile_img}`" 
                                                 alt="User Avatar"
-                                                class="w-8 h-8 rounded-full object-cover"
+                                                class="mr-2 w-8 h-8 rounded-full object-cover"
                                             />
+                                            <img 
+                                                v-else 
+                                                src="/uploads/profile/default-profile.png" 
+                                                alt="Default Avatar"
+                                                class="mr-2 w-8 h-8 rounded-full object-cover"
+                                            />
+
                                             <!-- Hiển thị tên người dùng nếu không có ảnh -->
-                                            <span v-else>
+                                            <span v-if="!$page.props.auth.user.profile_img">
                                                 {{ $page.props.auth.user.name }}
                                             </span>
 
@@ -70,6 +77,7 @@ const showingNavigationDropdown = ref(false);
                                                     clip-rule="evenodd" />
                                             </svg>
                                         </span>
+
                                     </template>
 
                                     <template #content>

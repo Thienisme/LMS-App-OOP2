@@ -111,7 +111,13 @@ const deleteUser = (id) => {
                 <tbody>
                   <tr v-for="(row, index) in users" :key="row.id">
                     <td class="border px-4 py-2">{{ index+1 }}</td>
-                    <td class="border px-4 py-2"><img :src="path+row.profile_img" style="width: 64px; height: 64px;"/></td>
+                    <td class="border px-4 py-2">
+                      <img
+                        :src="row.profile_img ? path + row.profile_img : '/uploads/profile/default-profile.png'"
+                        style="width: 64px; height: 64px;"
+                        alt="User Avatar"
+                      />
+                    </td>
                     <td class="border px-4 py-2">{{ row.name }}</td>
                     <td class="border px-4 py-2">{{ row.email }}</td>
                     <td class="border px-4 py-2" v-if="row.is_admin == 1">Admin</td>
