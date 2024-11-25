@@ -149,7 +149,7 @@ const updateAuthor = (id) => {
                 <thead>
                   <tr class="bg-gray-100">
                     <th class="border px-4 py-2 w-5 text-left">No.</th>
-                    <th class="border px-4 py-2 text-left">Category Name</th>
+                    <th class="border px-4 py-2 text-left">Author Name</th>
                     <th class="border px-4 py-2 text-left">Created Date</th>
                     <th class="border px-4 py-2 text-left">Updated Date</th>
                     <th class="px-3 py-2">Action</th>

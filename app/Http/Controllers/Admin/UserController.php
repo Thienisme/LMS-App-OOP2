@@ -22,6 +22,9 @@ class UserController extends Controller
                         'email' => $user->email,
                         'profile_img' => $user->profile_img,
                         'is_admin' => $user->is_admin,
+                        'class' => $user->class, // Thêm trường lớp
+                        'student_code' => $user->student_code, // Thêm mã sinh viên
+                        'phone' => $user->phone, // Thêm số điện thoại
                         'created_at' => \Carbon\Carbon::parse($user->created_at)->format('d/m/Y - H:i:s'),
                         'updated_at' => \Carbon\Carbon::parse($user->updated_at)->format('d/m/Y - H:i:s'),
                     ];
@@ -31,13 +34,18 @@ class UserController extends Controller
             return $error->getMessage();
         }
     }
+
     // Update User Data Role
     public function update(Request $request, $id)
     {
         try{
-            Validator::make($request->all(), [
-                'is_admin' => ['required'],
-            ])->validate();
+          Validator::make($request->all(), [
+              'is_admin' => ['required'],
+              'class' => ['nullable', 'string', 'max:50'], // Không bắt buộc
+              'student_code' => ['nullable', 'string', 'max:20', 'unique:users,student_code,'.$id],
+              'phone' => ['nullable', 'string', 'max:15'],
+          ])->validate();
+        
 
             $user = User::find($id);
 
@@ -45,13 +53,14 @@ class UserController extends Controller
                 $user->update($request->all());
 
                 return redirect()->back()
-                    ->with('message', 'Updated user role.');
+                    ->with('message', 'Updated user information successfully.');
             }
 
         }catch(\Exception $error){
             return $error->getMessage();
         }
     }
+
     // Delete User
     public function destroy($id)
     {

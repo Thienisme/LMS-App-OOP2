@@ -13,6 +13,9 @@ const form = useForm({
     password_confirmation: '',
     role: 0,
     profile: null,  // Đặt là null ban đầu
+    class: '',      // Thêm trường lớp
+    student_code: '', // Thêm trường mã sinh viên
+    phone: '',      // Thêm trường số điện thoại
     terms: false,
 });
 
@@ -61,6 +64,50 @@ const handleFileChange = (event) => {
                     autocomplete="username"
                 />
                 <InputError class="mt-2" :message="form.errors.email" />
+            </div>
+
+            <!-- Thêm trường lớp -->
+            <div class="mt-4">
+                <InputLabel for="class" value="Class" />
+                <TextInput
+                    id="class"
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="form.class"
+                    required
+                    autocomplete="class"
+                />
+                <InputError class="mt-2" :message="form.errors.class" />
+            </div>
+
+            <!-- Thêm trường mã sinh viên -->
+            <div class="mt-4">
+                <InputLabel for="student_code" value="Student Code" />
+                <TextInput
+                    id="student_code"
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="form.student_code"
+                    required
+                    autocomplete="student_code"
+                />
+                <InputError class="mt-2" :message="form.errors.student_code" />
+            </div>
+
+            <!-- Thêm trường số điện thoại -->
+            <div class="mt-4">
+                <InputLabel for="phone" value="Phone Number" />
+                <TextInput
+                    id="phone"
+                    type="tel"
+                    class="mt-1 block w-full"
+                    v-model="form.phone"
+                    required
+                    autocomplete="tel"
+                    pattern="[0-9]{10}"
+                    title="Please enter a valid 10-digit phone number"
+                />
+                <InputError class="mt-2" :message="form.errors.phone" />
             </div>
 
             <div class="mt-4">

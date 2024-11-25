@@ -17,6 +17,9 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        // Tạo mã sinh viên ngẫu nhiên với định dạng SV + số
+        $studentCode = 'SV' . str_pad($this->faker->unique()->numberBetween(1, 99999), 5, '0', STR_PAD_LEFT);
+        
         return [
             'name' => $this->faker->name,
             'email' => $this->faker->unique()->email,
@@ -25,7 +28,10 @@ class UserFactory extends Factory
             'profile_img' => 'default-profile.png',
             'is_admin' => $this->faker->randomElement([0, 1]),
             'remember_token' => Str::random(10),
-            //
+            // Thêm các trường mới
+            'class' => $this->faker->randomElement(['10A1', '10A2', '11A1', '11A2', '12A1', '12A2']), // Tạo lớp ngẫu nhiên
+            'student_code' => $studentCode, // Sử dụng mã sinh viên đã tạo
+            'phone' => $this->faker->numerify('0#########'), // Tạo số điện thoại Việt Nam 10 số
         ];
     }
 }

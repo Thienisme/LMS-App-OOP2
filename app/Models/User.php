@@ -24,6 +24,9 @@ class User extends Authenticatable
         'password',
         'profile_img',
         'is_admin',
+        'class',          // Thêm trường lớp
+        'student_code',   // Thêm mã sinh viên
+        'phone',          // Thêm số điện thoại
     ];
 
     /**
@@ -43,5 +46,8 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'student_code' => 'string',
+        'class' => 'string',
+        'phone' => 'string',
     ];
 }

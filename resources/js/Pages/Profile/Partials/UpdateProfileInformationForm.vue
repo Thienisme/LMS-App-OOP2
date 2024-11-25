@@ -18,15 +18,19 @@ const user = usePage().props.auth.user;
 
 const form = useForm({
     name: user.name,
-    email: user.email,  
+    email: user.email,
     profile_img: null,
+    class: user.class || '',         // Thêm trường class
+    student_code: user.student_code || '', // Thêm trường student_code
+    phone: user.phone || '',         // Thêm trường phone
 });
+
 </script>
 
 <template>
     <section>
         <header>
-            <h2 class="text-lg font-medium text-gray-900">Profile Information</h2>
+            <h2 class="text-xl font-medium text-gray-900">Profile Information</h2>
 
             <p class="mt-1 text-sm text-gray-600">
                 Update your account's profile information, email address.
@@ -36,15 +40,24 @@ const form = useForm({
 
         <form @submit.prevent="form.patch(route('profile.update'))" class="mt-6 space-y-6">
             <!-- Hiển thị ảnh đại diện hiện tại nếu có, nếu không sẽ hiển thị ảnh mặc định -->
-            <div class="mb-4 mt-4">
-            <InputLabel for="avatar" value="Avatar" />
-                <img
-                    :src="user.profile_img ? `/profile/${user.profile_img}` : '/uploads/profile/default-profile.png'"
-                    alt="Avatar"
-                    class="w-20 h-20 rounded-full object-cover"
-                />
-                <InputError class="mt-2" :message="form.errors.profile_img" />
+            <div class="mb-4 mt-4 flex flex-col items-center">
+                <InputLabel for="avatar" value="" class="mb-2 text-lg font-semibold text-gray-700" />
+                <div class="relative">
+                    <img
+                        :src="user.profile_img ? `/profile/${user.profile_img}` : '/uploads/profile/default-profile.png'"
+                        alt="Avatar"
+                        class="w-40 h-40 rounded-full object-cover border-4 border-blue-500 shadow-lg"
+                    />
+                    <!-- Badge Icon (tuỳ chọn) -->
+                    <div class="absolute bottom-0 right-0 w-8 h-8 bg-green-500 border-2 border-white rounded-full flex items-center justify-center shadow">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707a1 1 0 00-1.414-1.414L9 11.586 7.707 10.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                </div>
+                <InputError class="mt-2 text-red-500" :message="form.errors.profile_img" />
             </div>
+
             <div>
                 <InputLabel for="name" value="Name" />
                 <TextInput
@@ -92,6 +105,43 @@ const form = useForm({
                     A new verification link has been sent to your email address.
                 </div>
             </div>
+
+            <div>
+                  <InputLabel for="class" value="Class" />
+                  <TextInput
+                      id="class"
+                      type="text"
+                      class="mt-1 block w-full"
+                      v-model="form.class"
+                      autocomplete="class"
+                  />
+                  <InputError class="mt-2" :message="form.errors.class" />
+              </div>
+
+            <div>
+                <InputLabel for="student_code" value="Student Code" />
+                <TextInput
+                    id="student_code"
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="form.student_code"
+                    autocomplete="student_code"
+                />
+                <InputError class="mt-2" :message="form.errors.student_code" />
+            </div>
+
+            <div>
+                <InputLabel for="phone" value="Phone" />
+                <TextInput
+                    id="phone"
+                    type="text"
+                    class="mt-1 block w-full"
+                    v-model="form.phone"
+                    autocomplete="phone"
+                />
+                <InputError class="mt-2" :message="form.errors.phone" />
+            </div>
+
 
             <div class="flex items-center gap-4">
                 <PrimaryButton :disabled="form.processing">Save</PrimaryButton>

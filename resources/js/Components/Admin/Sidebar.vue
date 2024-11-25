@@ -28,7 +28,7 @@ const form = useForm({
             :src="form.profile ? path + form.profile : '/uploads/profile/default-profile.png'" 
             style="width: 64px; height: 64px;">
         <div>
-            <h3 class="text-gray-100">{{ form.name }}</h3>
+            <!-- <h3 class="text-gray-100">{{ form.name }}</h3> -->
             <p class="text-gray-500" v-if="form.role == 1">Admin</p>
             <p class="text-gray-500" v-if="form.role == 0">User</p>
         </div>
