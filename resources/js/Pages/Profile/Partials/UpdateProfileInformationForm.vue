@@ -4,6 +4,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { ref, computed } from 'vue';
 
 defineProps({
     mustVerifyEmail: {
@@ -20,41 +21,135 @@ const form = useForm({
     name: user.name,
     email: user.email,
     profile_img: null,
-    class: user.class || '',         // Thêm trường class
-    student_code: user.student_code || '', // Thêm trường student_code
-    phone: user.phone || '',         // Thêm trường phone
+    class: user.class || '',
+    student_code: user.student_code || '',
+    phone: user.phone || '',
 });
 
+// Ref để lưu trữ file input
+const fileInput = ref(null);
+// Ref để lưu URL preview của ảnh
+const previewImage = ref(null);
+
+const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        // Kiểm tra kích thước file
+        if (file.size > 5 * 1024 * 1024) {
+            form.errors.profile_img = 'File size should not exceed 5MB';
+            return;
+        }
+
+        // Kiểm tra định dạng file
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!allowedTypes.includes(file.type)) {
+            form.errors.profile_img = 'Only JPEG, PNG, and GIF files are allowed';
+            return;
+        }
+
+        // Giải phóng URL preview cũ
+        if (previewImage.value) {
+            URL.revokeObjectURL(previewImage.value);
+        }
+
+        // Tạo URL preview mới
+        previewImage.value = URL.createObjectURL(file);
+
+        // Đặt file vào form
+        form.profile_img = file;
+        form.errors.profile_img = null; // Clear lỗi
+    }
+};
+
+const removeAvatar = () => {
+    if (previewImage.value) {
+        URL.revokeObjectURL(previewImage.value);
+        previewImage.value = null;
+    }
+
+    form.profile_img = null;
+    if (fileInput.value) {
+        fileInput.value.value = ''; // Reset file input
+    }
+};
+
+// Hàm kích hoạt input file
+const triggerFileInput = () => {
+    fileInput.value.click();
+};
+
+
+// Computed để xác định src của ảnh
+const avatarSrc = computed(() => {
+    // Ưu tiên preview image (ảnh mới chọn)
+    if (previewImage.value) {
+        return previewImage.value;
+    }
+    
+    // Nếu không có preview, sử dụng ảnh từ user
+    if (user.profile_img) {
+        return `/profile/${user.profile_img}`;
+    }
+    
+    // Nếu không có ảnh, sử dụng ảnh mặc định
+    return '/uploads/profile/default-profile.png';
+});
 </script>
 
 <template>
     <section>
         <header>
             <h2 class="text-xl font-medium text-gray-900">Profile Information</h2>
-
             <p class="mt-1 text-sm text-gray-600">
-                Update your account's profile information, email address.
+                Update your account's profile information, email address, and avatar.
             </p>
         </header>
 
-
         <form @submit.prevent="form.patch(route('profile.update'))" class="mt-6 space-y-6">
-            <!-- Hiển thị ảnh đại diện hiện tại nếu có, nếu không sẽ hiển thị ảnh mặc định -->
             <div class="mb-4 mt-4 flex flex-col items-center">
                 <InputLabel for="avatar" value="" class="mb-2 text-lg font-semibold text-gray-700" />
                 <div class="relative">
                     <img
-                        :src="user.profile_img ? `/profile/${user.profile_img}` : '/uploads/profile/default-profile.png'"
+                        :src="avatarSrc"
                         alt="Avatar"
                         class="w-40 h-40 rounded-full object-cover border-4 border-blue-500 shadow-lg"
                     />
-                    <!-- Badge Icon (tuỳ chọn) -->
-                    <div class="absolute bottom-0 right-0 w-8 h-8 bg-green-500 border-2 border-white rounded-full flex items-center justify-center shadow">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707a1 1 0 00-1.414-1.414L9 11.586 7.707 10.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                        </svg>
+                    <!-- Avatar actions -->
+                    <div class="absolute bottom-0 right-0 flex space-x-2">
+                        <!-- Upload button -->
+                        <button 
+                            type="button" 
+                            @click="triggerFileInput"
+                            class="w-8 h-8 bg-blue-500 border-2 border-white rounded-full flex items-center justify-center shadow"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </button>
+                        
+                        <!-- Remove button (only show if there's a custom avatar) -->
+                        <button 
+                            v-if="user.profile_img || previewImage"
+                            type="button" 
+                            @click="removeAvatar"
+                            class="w-8 h-8 bg-red-500 border-2 border-white rounded-full flex items-center justify-center shadow"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
+                
+                <!-- Hidden file input -->
+                <input 
+                    type="file" 
+                    ref="fileInput"
+                    @change="handleFileUpload"
+                    accept="image/jpeg,image/png,image/gif"
+                    class="hidden"
+                />
+                
                 <InputError class="mt-2 text-red-500" :message="form.errors.profile_img" />
             </div>
 

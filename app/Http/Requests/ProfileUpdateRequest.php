@@ -22,6 +22,7 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'profile_img' => ['nullable', 'image', 'mimes:jpeg,png,gif', 'max:5120'],
             'class' => ['nullable', 'string', 'max:50'], // Thêm quy tắc xác thực cho 'class'
             'student_code' => [
                 'nullable',

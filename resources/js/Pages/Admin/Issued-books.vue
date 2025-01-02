@@ -97,7 +97,8 @@ const deleteBookRequest = (id) => {
               <div style="overflow-x:auto;">
                 <DataTable class="display nowrap h-full">
                   <thead>
-                    <tr class="bg-gray-100">
+                    <tr class="bg-gray-100" 
+                    style="background-color: antiquewhite;">
                       <th class="border px-4 py-2 w-5 text-left">No.</th>
                       <th class="border px-4 py-2 text-left">Image</th>
                       <th class="border px-4 py-2 w-0 text-left">Issued No.</th>

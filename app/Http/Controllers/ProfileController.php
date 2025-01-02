@@ -8,6 +8,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -24,21 +26,45 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Update the user's profile information.
-     */
+    private function deleteOldProfileImage($user)
+    {
+        if ($user->profile_img && Storage::disk('public')->exists('profile/' . $user->profile_img)) {
+            Storage::disk('public')->delete('profile/' . $user->profile_img);
+        }
+    }
+
+    private function saveProfileImage($file, $user)
+    {
+        $filename = 'profile_' . $user->id . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+        $file->storeAs('profile', $filename, 'public');
+        return $filename;
+    }
+
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $validatedData = $request->validated();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
+        \DB::transaction(function () use ($request, $user, $validatedData) {
+            if ($request->hasFile('profile_img')) {
+                $this->deleteOldProfileImage($user);
+                $filename = $this->saveProfileImage($request->file('profile_img'), $user);
+                $validatedData['profile_img'] = $filename;
+            }
 
-        $request->user()->save();
+            $user->fill($validatedData);
+
+            if ($user->isDirty('email')) {
+                $user->email_verified_at = null;
+            }
+
+            $user->save();
+        });
 
         return Redirect::route('profile.edit');
     }
+
+
 
     /**
      * Delete the user's account.
@@ -50,6 +76,9 @@ class ProfileController extends Controller
         ]);
 
         $user = $request->user();
+
+        // Xóa ảnh profile nếu tồn tại
+        $this->deleteOldProfileImage($user);
 
         Auth::logout();
 
